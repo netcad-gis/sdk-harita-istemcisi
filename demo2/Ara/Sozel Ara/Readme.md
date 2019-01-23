@@ -23,3 +23,8 @@ Highlight temizlemek için "ol.nc.NetgisSearch.clear" fonksiyonu kullanılır.
 
 
 ![Sözel Ara Örnek](https://raw.githubusercontent.com/netcad-gis/sdk-harita-istemcisi/master/img/image2018-6-26%208_15_28.png)
+
+
+
+
+
