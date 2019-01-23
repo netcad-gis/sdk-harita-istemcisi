@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta charset="utf-8">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> 
+
+	<link rel="shortcut icon" href="http://demo.netigma.io/webgissdk4/img/favicon.png" />
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="js/jquery-3.1.0.min.js"><\/script>')</script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.20.1/ol.js"></script>
+	<script>window.ol || document.write('<script src="js/ol.js"><\/script>')</script>
+
+	<script src="https://unpkg.com/popper.js@1.14.3/dist/umd/popper.min.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.17/proj4.js"></script>
+	<script>window.proj4 || document.write('<script src="js/proj4.js"><\/script>')</script>
+
+	<script src='http://demo.netigma.io/webgissdk4/js/sdk.js'></script>
+
+	<link href="http://demo.netigma.io/webgissdk4/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="http://demo.netigma.io/webgissdk4/css/ol.css" rel="stylesheet" />
+
+	<link href="http://demo.netigma.io/webgissdk4/css/sdk-iconfont.css" rel="stylesheet" />
+	<link href='http://demo.netigma.io/webgissdk4/css/sdk.css' rel='stylesheet' />
+	<!--link href='scripts/ol-ext.min.css' rel='stylesheet' /-->
+
+	<title>Kadıköy</title>
+
+	<style>
+		#map {
+			width: 100%;
+			height: 100%;
+			top: 0px;
+			left: 0px;
+		}
+	</style>
+</head>
+
+<body style="padding-top:20px;">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-2">
+				<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+					<div class="panel panel-primary">
+						<div class="panel-heading" role="tab" id="headingOne">
+							<h4 class="panel-title">
+								<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">Sorgulama</a>
+							</h4>
+						</div>
+						<div id="collapseOne" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingOne">
+							<div class="panel-body">
+								<div style="padding-bottom:10px;">
+									<label style="float:left;line-height:34px;vertical-align:middle;">Değer : </label>
+									<input style="float:right;width:calc(100% - 60px);" type="text" class="form-control" placeholder="Değer" aria-describedby="basic-addon1" id="bxvalue" value=""></input>
+								</div>
+								<button class="btn btn-default btn-block" type="button" onclick="return map_action('kapi_sorgula');">Kapı-UAVT Kodu Sorgula</button>
+								<button class="btn btn-default btn-block" type="button" onclick="return map_action('bina_sorgula');">Kapı-Bina No Sorgula</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-10">
+				<div id="map" tabindex="0"></div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-success">
+					<div class="panel-heading">
+						<h3 class="panel-title">Bilgi</h3>
+					</div>
+					<div class="panel-body" id="result">&nbsp;</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+	
+		var _startupParameters = {
+			"SessionId":"",
+			"WebgisUrl":"http://demo.netigma.io/webgis_net",
+			"SDKUrl":"http://demo.netigma.io/webgissdk4",
+			"ImageType":"png",
+			"PageTitle":"-",
+			"MaxZoomLevel":"10",
+			"BBox":"-",
+			"Limit":"-",
+			"Workspace":"MIS",
+			"TileSize":"256",
+			"MaxRecordCount":"100",
+			"Language":"tr",
+			"FindLimit":true,
+			"CleanUp":true,
+			"ParameterRegister":false,
+			"ZoomBar":true,
+			"RequestbySingleLayer":false,
+			"GeometrySelect":false
+		}
+	
+	
+		var ncol3map = null;
+
+		var interactions = ol.interaction.defaults({ pinchRotate: false });
+		ncol3map = new ol.Map({
+			target: 'map',
+			controls: [],
+			interactions: interactions,
+			loadTilesWhileInteracting: false,
+			loadTilesWhileAnimating: false,
+			layers: [
+				/*new ol.layer.Tile({
+					source: new ol.source.XYZ({ url: '_pl/{z}/{x}/{y}.png', minZoom: 3, maxZoom: 3, wrapX: false, projection: ol.proj.get('EPSG:3857') })
+				})*/
+			]
+		});
+		//ncol3map.getView().fit([2748916.325541941, 4130295.3963087457, 5097061.834462555, 5321490.045104932], ncol3map.getSize());
+
+		function initMap() {
+			ncol3map.initNGS(_startupParameters,
+				{
+					loadComponents: false,
+					leftPanel: false,
+					toolbar: false,
+					layerManager: false,
+					overviewMap: false,
+					zoom: false,
+					scaleLine: false
+				},
+				function (sucessResult) {
+					
+					$('#result').empty();
+					
+					$(ncol3map.get("getTablesResult").Tables.Table).each(function() { 
+						var table = this;
+						console.log("%c"+table.TableName, 'color: blue; font-weight: bold;'); 
+						$(this.Fields.Field).each(function() { 
+							console.log(table.TableDisplayName+"."+this.FieldName); 
+						})
+					})					
+/*					
+					$(ncol3map.get("getTablesResult").Tables.Table).each(function() { 
+						console.log(this.TableName); 
+						$('#result').append(this.TableName + '<br>');
+						$(this.Fields.Field).each(function() { 
+							//console.log(this.FieldName); 
+						})
+					})					
+*/					
+					$(document).keyup(function (e) {
+						if (e.keyCode == 27) {
+							if (!$("#_ncGlobalModal").is(":visible")) {
+								ncol3map.clearCurrentHandler();
+							}
+						}
+					});
+				},
+				function (errorResult) {
+					console.debug(errorResult);
+				}
+			);
+		}
+		
+		
+		function map_action(name)
+		{
+			$('#result').empty();
+
+			switch(name) {
+			case "kapi_sorgula" :
+				fieldname = "kapi_uavt_kod";
+				$('#result').append('<b>Kapı-UAVT Kodu Sorgula</b><br><br>');
+				break;
+			case "bina_sorgula" :
+				fieldname = "binano";
+				$('#result').append('<b>Kapı-Bina No Sorgula</b><br><br>');
+				break;
+			}
+			
+			switch(name) {
+			case "bina_sorgula" :
+			case "kapi_sorgula" :
+			
+				var value = $("#bxvalue").val();
+				
+				if (!value.length) {
+					$('#result').append('Değer bilgisi yok!...<br>');
+					break;
+				}
+						
+				var filter = "<Filter><And><PropertyIsEqualTo><PropertyName>"+fieldname+"</PropertyName><Literal>"+value+"</Literal></PropertyIsEqualTo></And></Filter>";
+			
+				ol.nc.Util.getInfoFromNetgis({
+                	layerName: "kentrehberi_kapi",
+                	filter: filter,
+                	maxRecordCount: 100,
+                	webgisUrl: ncol3map.get("startupParameters").getWebgisUrl(),
+                	workspaceName: ncol3map.get("startupParameters")["Workspace"],
+                	sessionId: ncol3map.get("startupParameters")["SessionId"],
+                	successFunction: function (result, context) {
+                		//Dönen veri xml'e çevirilir.
+						try {
+							result = $.parseXML(result.documentElement.firstChild.nodeValue);
+							//Xml verisindeki "Data" etiketinde dönen kayıtlar yer alır.
+							$data = $(result).find("Data");
+							if ($data.length == 0 || $data.children().length == 0) {
+								$('#result').append('Sonuç bulunamadı!...<br>');
+								return;
+							}
+						} catch(e) {
+							$('#result').append('Sonuç hatası!...'+e.message+'<br>');
+						}
+
+                		$.each($data.children("record"), function (idx, rec) { //$data altındaki her bir "record" etiketinde katmana ait bulunan kayıtlar yer alır.
+                			var htmlResult = "";
+                			var $rec = $(rec);
+                			htmlResult += $.map($rec.children(), function (recProp) { //Dönen her kayıt için özellikler ve değerleri metin haline dönüştürülür.
+                				var $recProp = $(recProp);
+                				return "<b>" + $recProp.prop("tagName") + "</b> :" + $recProp.text() + "<br>";
+                			}).join('');
+                			$('#result').append(htmlResult + '<br>');
+                		});
+                	}
+                });
+			
+			
+			break;
+			}
+			return false;
+		}
+		
+	</script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/js/bootstrap.min.js"></script>
+	<script>(typeof $().emulateTransitionEnd == 'function') || document.write('<script src="js/bootstrap.min.js"><\/script>')</script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/6.0.1/i18next.min.js"></script>
+	<script>window.i18next || document.write('<script src="js/i18next.min.js"><\/script>')</script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/i18next-browser-languagedetector/1.0.1/i18nextBrowserLanguageDetector.min.js"></script>
+	<script>window.i18nextBrowserLanguageDetector || document.write('<script src="js/i18nextBrowserLanguageDetector.min.js"><\/script>')</script>
+
+	<script src="http://demo.netigma.io/webgissdk4/js/i18nextXHRBackend.min.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-i18next/1.2.0/jquery-i18next.min.js"></script>
+	<script>window.jqueryI18next || document.write('<script src="js/jquery-i18next.min.js"><\/script>')</script>
+	
+	
+	<!--script src="scripts/ol-ext.min.js"></script-->
+
+
+	<script type="text/javascript">
+        $.ajax({
+            type: "POST",
+            url: "http://webgis.kadikoy.bel.tr/netgis5/ncwebgisservice.asmx/Login",
+            data: "UserName=mis_beyaz&Password=mis_beyaz",
+            dataType: "xml",
+            success: function(result) {
+				_startupParameters["SessionId"] = result.firstChild.innerHTML;
+				initMap();
+            },
+            error:function() {
+				alert("sessionId alinamadı...");
+                return false;
+            }
+        });
+	</script>
+</body>
+</html>

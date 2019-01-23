@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+ 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.20.1/ol.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.17/proj4.js"></script>
+     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/6.0.1/i18next.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next-browser-languagedetector/1.0.1/i18nextBrowserLanguageDetector.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-i18next/1.2.0/jquery-i18next.min.js"></script>
+     
+    <script src="http://demo.netigma.io/webgissdk4/js/i18nextXHRBackend.min.js"></script> 
+    <script src='http://demo.netigma.io/webgissdk4/js/sdk.js'></script>
+     
+    <link href="http://demo.netigma.io/webgissdk4/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="http://demo.netigma.io/webgissdk4/css/ol.css" rel="stylesheet" />
+    <link href="http://demo.netigma.io/webgissdk4/css/sdk-iconfont.css" rel="stylesheet" />
+	<link href='http://demo.netigma.io/webgissdk4/css/sdk.css' rel='stylesheet' />
+ 
+    <style>
+        #map {
+            width: 100%;
+            height: 100%;
+            top: 0px;
+            left: 0px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-10">
+                <div id="map" tabindex="0"></div>
+            </div>
+        </div>
+    </div>
+ 
+ 	<div class="row">
+		<div class="col-md-10">
+			<input type="button" id="btnSubmit" value="Tematik" />
+		</div>
+	</div>
+
+ 
+    <script type='text/javascript'>
+        var sdkBaseUrl = "http://demo.netigma.io/webgissdk4/";
+        var netgisBaseUrl = "http://demo.netigma.io/webgis_net";    // Noktalı virgül(;) ile birden fazla Netgis Server tanımlanabilir.
+        var _startupParameters =
+            {
+                "SessionId": "",
+                "WebgisUrl": netgisBaseUrl,
+                "SDKUrl": sdkBaseUrl,
+                "ImageType": "png",
+                "PageTitle": "-",
+                "MaxZoomLevel": "14",
+                "BBox": "-",
+                "Limit": "-",
+                "Workspace": "REHBER6_EXP",
+                "TileSize": "256",
+                "MaxRecordCount": "100",
+                "Language": "tr",
+                "FindLimit": true,
+                "CleanUp": true,
+                "ZoomBar": true
+            }
+ 
+        var ncol3map = null;
+        var interactions = ol.interaction.defaults({ pinchRotate: false });
+        ncol3map = new ol.Map({
+            target: 'map',
+            controls: [],
+            interactions: interactions,
+            loadTilesWhileInteracting: false,
+            loadTilesWhileAnimating: false
+        });
+ 
+        function initMap() {
+            ncol3map.initNGS(_startupParameters,
+                {
+                    loadComponents: false,
+                    leftPanel: false,
+                    toolbar: false,
+                    layerManager: false,
+                    overviewMap: false,
+                    zoom: false,
+                    scaleLine: false
+                },
+                function (sucessResult) {
+                    console.debug("success");
+                },
+                function (errorResult) {
+                    console.debug(errorResult);
+                }
+            );
+        }
+    </script>
+ 
+ 
+
+ 
+ 
+ 
+ <script type="text/javascript">
+         
+        $(document).ready(function(){
+            initMap();
+             
+             
+             
+            $("#btnSubmit").click(function(){
+             
+                //Tematik temizlemek için tanımlı fonksiyon çağrısı yapılır.
+                ol.nc.Thematic.clear();
+                //Yeni bir thematicFeatures nesnesi oluşturulur.
+                var thematicFeatures = new ol.nc.Thematic.thematicFeatures();
+                //Tematiğin yapılacağı tablodaki anahtar alan belirlenir.
+                thematicFeatures.keyField = 'adi_numarasi';
+                //Tematiğin yapılacağı layer belirlenir.
+                thematicFeatures.layer = 'geomahalle';
+                //Tematiğin yapılacağı featureları tutan dizi oluşturulur.
+                thematicFeatures.features = [];
+                //Tematiğin yapılacağı featurelar oluşturulur ve diziye eklenir.
+                var thematicFeature = new ol.Feature();
+                var properties = {};
+                properties['adi_numarasi'] = 'BARIŞ';
+                thematicFeature.setProperties(properties)
+                thematicFeatures.features.push(thematicFeature);
+                thematicFeature = new ol.Feature();
+                var properties = {};
+                properties['adi_numarasi'] = 'KAVAKLI';
+                thematicFeature.setProperties(properties)
+                thematicFeatures.features.push(thematicFeature);
+                thematicFeature = new ol.Feature();
+                var properties = {};
+                properties['adi_numarasi'] = 'SAHİL';
+                thematicFeature.setProperties(properties)
+                thematicFeatures.features.push(thematicFeature);
+                thematicFeature = new ol.Feature();
+                var properties = {};
+                properties['adi_numarasi'] = 'MARMARA';
+                thematicFeature.setProperties(properties)
+                thematicFeatures.features.push(thematicFeature);
+ 
+ 
+ 
+                //Tematik stillerini tutan dizi oluşturulur.
+                var thematicStyles = [];
+                //Tematiğin stili oluşturulur ve diziye eklenir.
+                var thematicStyle = new ol.nc.Thematic.thematicStyle();
+                //Tematik yapılan kayıtlarda görüntülenecek etiket belirlenir.
+                thematicStyle.label = 'BARIŞ';
+                //Tematik stiline girecek kayıtları süzmek için kriter belirlenir.
+                thematicStyle.criteria = '[#adi_numarasi]=="BARIŞ"';
+                //Tematik yapılan kayıtların görüntüleneceği stil belirlenir.
+                thematicStyle.style = new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: 'rgba(110,207,246, 0.7)'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(110,207,246, 1)',
+                        width: 5
+                    }),
+                    text: new ol.style.Text({
+                        fill: new ol.style.Fill({
+                            color: 'rgba(110,207,246, 1)'
+                        })
+                    })
+                });
+                //Tematik stili diziye eklenir.
+                thematicStyles.push(thematicStyle);
+                thematicStyle = new ol.nc.Thematic.thematicStyle();
+                thematicStyle.label = 'KAVAKLI';
+                thematicStyle.criteria = '[#adi_numarasi]=="KAVAKLI"';
+                thematicStyle.style = new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: 'rgba(0,114,188, 0.7)'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(0,114,188, 1)',
+                        width: 5
+                    }),
+                    text: new ol.style.Text({
+                        fill: new ol.style.Fill({
+                            color: 'rgba(0,114,188, 1)'
+                        })
+                    })
+                });
+                thematicStyles.push(thematicStyle);
+                thematicStyle = new ol.nc.Thematic.thematicStyle();
+                thematicStyle.label = 'SAHİL';
+                thematicStyle.criteria = '[#adi_numarasi]=="SAHİL"';
+                thematicStyle.style = new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: 'rgba(166,206,57, 0.7)'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(166,206,57, 1)',
+                        width: 5
+                    }),
+                    text: new ol.style.Text({
+                        fill: new ol.style.Fill({
+                            color: 'rgba(166,206,57, 1)'
+                        })
+                    })
+                });
+                thematicStyles.push(thematicStyle);
+                thematicStyle = new ol.nc.Thematic.thematicStyle();
+                thematicStyle.label = 'MARMARA';
+                thematicStyle.criteria = '[#adi_numarasi]=="MARMARA"';
+                thematicStyle.style = new ol.style.Style({
+                    fill: new ol.style.Fill({
+                        color: 'rgba(255,203,8, 0.7)'
+                    }),
+                    stroke: new ol.style.Stroke({
+                        color: 'rgba(255,203,8, 1)',
+                        width: 5
+                    }),
+                    text: new ol.style.Text({
+                        fill: new ol.style.Fill({
+                            color: 'rgba(255,203,8, 1)'
+                        })
+                    })
+                });
+                thematicStyles.push(thematicStyle);
+                //Tematik uygulamak için stiller ve veri parametreleriyle fonksiyon çağrısı yapılır.
+                ol.nc.Thematic.applyThematic(thematicStyles, thematicFeatures);
+                 
+             
+                 
+             
+            });
+             
+        });
+         
+         
+    </script>
+	
+ 
+</body>
+</html>

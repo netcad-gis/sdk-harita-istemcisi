@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+
+	<link rel="shortcut icon" href="http://demo.netigma.io/webgissdk4/img/favicon.png" />
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script>window.jQuery || document.write('<script src="js/jquery-3.1.0.min.js"><\/script>')</script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.20.1/ol.js"></script>
+	<script>window.ol || document.write('<script src="js/ol.js"><\/script>')</script>
+
+	<script src="https://unpkg.com/popper.js@1.14.3/dist/umd/popper.min.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.17/proj4.js"></script>
+	<script>window.proj4 || document.write('<script src="js/proj4.js"><\/script>')</script>
+
+	<script src='http://demo.netigma.io/webgissdk4/js/sdk.js'></script>
+
+	<link href="http://demo.netigma.io/webgissdk4/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="http://demo.netigma.io/webgissdk4/css/ol.css" rel="stylesheet" />
+
+	<link href="http://demo.netigma.io/webgissdk4/css/sdk-iconfont.css" rel="stylesheet" />
+	<link href='http://demo.netigma.io/webgissdk4/css/sdk.css' rel='stylesheet' />
+
+	<title data-i18n="anasayfa.baslik"></title>
+
+	<style>
+		#map {
+			width: 100%;
+			height: 100%;
+			top: 0px;
+			left: 0px;
+		}
+	</style>
+</head>
+
+<body>
+
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-2">
+				<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+					<div class="panel panel-primary">
+						<div class="panel-heading" role="tab" id="headingOne">
+							<h4 class="panel-title">
+								<a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+									Arama
+								</a>
+							</h4>
+						</div>
+						<div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+							<div class="panel-body">
+								<input type="text" class="form-control" placeholder="Mahalle Adı" aria-describedby="basic-addon1" id="txtAra" value="BARIŞ">
+								<button class="btn btn-default btn-block" type="button" id="btnQueryAndMark" onclick="btnQueryAndMark_Click();return false;">Mahalle Ara-Seç</button>
+								<button class="btn btn-default btn-block" type="button" id="btnClearHighlights" onclick="btnClearHighlights_Click();return false;">Highlight Temizle</button>
+								<button class="btn btn-default btn-block" type="button" id="btnParcelSearch" onclick="btnParcelSearch_Click();return false;">Parsel Ara-Seç-Git</button>
+								<button class="btn btn-default btn-block" type="button" id="btnAddMarker" onclick="btnAddMarker_Click();return false;">Marker Ekle</button>
+								<button class="btn btn-default btn-block" type="button" id="btnAddMarkerIframe" onclick="btnAddMarkerIframe_Click(); return false;">Marker Ekle(IFrame içerik)</button>
+								<button class="btn btn-default btn-block" type="button" id="btnAddMarkerContent" onclick="btnAddMarkerContent_Click(); return false;">Marker Ekle(Özel içerik)</button>
+								<button class="btn btn-default btn-block" type="button" id="btnClearMarker" onclick="btnClearMarker_Click(); return false;">Marker Temizle</button>
+								<button class="btn btn-default btn-block" type="button" id="btnDrillDownPoint" onclick="btnDrillDownPoint_Click();return false;">Nokta ile Arama</button>
+								<button class="btn btn-default btn-block" type="button" id="btnDrillDownBuffer" onclick="btnDrillDownBuffer_Click();return false;">Buffer ile Arama</button>
+								<button class="btn btn-default btn-block" type="button" id="btnDrillDownBufferLayer" onclick="btnDrillDownBufferLayer_Click();return false;">Buffer ile Arama (Katman)</button>
+								<button class="btn btn-default btn-block" type="button" id="btnDrillDownLine" onclick="btnDrillDownLine_Click();return false;">Doğru ile Arama</button>
+								<button class="btn btn-default btn-block" type="button" id="btnDrillDownPolygon" onclick="btnDrillDownPolygon_Click();return false;">Poligon ile Arama</button>
+								<button class="btn btn-default btn-block" type="button" id="btnDrillDownPolygonLayer" onclick="btnDrillDownPolygonLayer_Click();return false;">Poligon ile Arama (Katman)</button>
+							</div>
+						</div>
+					</div>
+					<div class="panel panel-primary">
+						<div class="panel-heading" role="tab" id="headingTwo">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+									Gezinme
+								</a>
+							</h4>
+						</div>
+						<div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+							<div class="panel-body">
+								<button class="btn btn-default btn-block" type="button" id="btnZoomIn" onclick="btnZoomIn_Click(); return false;">Yaklaş</button>
+								<button class="btn btn-default btn-block" type="button" id="btnZoomOut" onclick="btnZoomOut_Click(); return false;">Uzaklaş</button>
+								<button class="btn btn-default btn-block" type="button" id="btnZoomInPan" onclick="btnZoomInPan_Click(); return false;">Yaklaş(Pan)</button>
+								<button class="btn btn-default btn-block" type="button" id="btnZoomOutPan" onclick="btnZoomOutPan_Click(); return false;">Uzaklaş(Pan)</button>
+								<hr />
+								<div class="input-group">
+									<span class="input-group-addon" id="basic-addon1">Y</span>
+									<input type="text" class="form-control" placeholder="Y" aria-describedby="basic-addon1" id="txtY" value="386469.66682158684">
+								</div>
+								<div class="input-group">
+									<span class="input-group-addon" id="basic-addon1">X</span>
+									<input type="text" class="form-control" placeholder="X" aria-describedby="basic-addon1" id="txtX" value="4542892.411418617">
+								</div>
+								<div class="input-group">
+									<span class="input-group-addon" id="basic-addon1">Zoom</span>
+									<input type="text" class="form-control" placeholder="Zoom" aria-describedby="basic-addon1" id="txtZoom" value="3">
+								</div>
+								<button class="btn btn-default btn-block" type="button" id="btnGotoXY" onclick="btnGotoXY_Click(); return false;">Git</button>
+							</div>
+						</div>
+					</div>
+					<div class="panel panel-primary">
+						<div class="panel-heading" role="tab" id="headingThree">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+									Gösterim
+								</a>
+							</h4>
+						</div>
+						<div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+							<div class="panel-body">
+								<button class="btn btn-default btn-block" type="button" id="btnThematic" onclick="btnThematic_Click(); return false;">Tematik Oluştur</button>
+								<button class="btn btn-default btn-block" type="button" id="btnThematicClear" onclick="btnThematicClear_Click(); return false;">Tematik Temizle</button>
+								<button class="btn btn-default btn-block" type="button" id="btnHeatMap" onclick="btnHeatMap_Click(); return false;">HeatMap Oluştur</button>
+								<!--
+
+								<button class="btn btn-default btn-block" type="button" id="btnHeatMapClear" onclick="btnHeatMapClear_Click(); return false;">HeatMap Temizle</button>
+								
+								
+								-->
+								
+								<button class="btn btn-default btn-block" type="button" id="btnCluster" onclick="btnCluster_Click(); return false;">Cluster Oluştur</button>
+								<button class="btn btn-default btn-block" type="button" id="btnPolygon" onclick="btnPolygon_Click(); return false;">Poligon Oluştur</button>
+								
+								<!--
+								
+								<button class="btn btn-default btn-block" type="button" id="btnClusterClear" onclick="btnClusterClear_Click(); return false;">Cluster Temizle</button>
+								-->
+							</div>
+						</div>
+					</div>
+					<div class="panel panel-primary">
+						<div class="panel-heading" role="tab" id="headingFour">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+									Event'ler
+								</a>
+							</h4>
+						</div>
+						<div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+							<div class="panel-body">
+								<button class="btn btn-default btn-block" type="button" id="btnAreaChanged" onclick="btnAreaChanged_Click(); return false;">Bölge Takip</button>
+								<button class="btn btn-default btn-block" type="button" id="btnGetOnClick" onclick="btnGetOnClick_Click(); return false;">Click</button>
+							</div>
+						</div>
+					</div>
+					<div class="panel panel-primary">
+						<div class="panel-heading" role="tab" id="headingFive">
+							<h4 class="panel-title">
+								<a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+									Diğer İşlevler
+								</a>
+							</h4>
+						</div>
+						<div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
+							<div class="panel-body">
+								<button class="btn btn-default btn-block" type="button" id="btnProjectionChange" onclick="btnProjectionChange_Click(); return false;">Projeksiyon Dönüştür</button>
+								<button class="btn btn-default btn-block" type="button" id="btnGetLimit" onclick="btnGetLimit_Click(); return false;">Görüntü Limiti Al</button>
+								<button class="btn btn-default btn-block" type="button" id="btnGetCurrentZoomLevel" onclick="btnGetCurrentZoomLevel_Click(); return false;">Zoom Seviyesi Al</button>
+								<button class="btn btn-default btn-block" type="button" id="btnWorldToPointXY" onclick="btnWorldToPointXY_Click(); return false;">Koordinat -> Piksel</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-10">
+				<div id="map" tabindex="0"></div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-md-12">
+				<div class="panel panel-success">
+					<div class="panel-heading">
+						<h3 class="panel-title">Bilgi</h3>
+					</div>
+					<div class="panel-body" id="result">
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type='text/javascript'>
+
+		var sdkBaseUrl = "http://demo.netigma.io/webgissdk4/";
+		var netgisBaseUrl = "http://demo.netigma.io/webgissdk4/webgis_net";	// Noktalı virgül(;) ile birden fazla Netgis Server tanımlanabilir.
+		
+		var _startupParameters=
+		{
+			"SessionId":"",
+			"WebgisUrl":netgisBaseUrl,
+			"SDKUrl":sdkBaseUrl,
+			"ImageType":"png",
+			"PageTitle":"-",
+			"MaxZoomLevel":"10",
+			"BBox":"-",
+			"Limit":"-",
+			"Workspace":"REHBER6",
+			"TileSize":"256",
+			"MaxRecordCount":"100",
+			"Language":"tr",
+			"FindLimit":true,
+			"CleanUp":true,
+			"ParameterRegister":false,
+			"ZoomBar":true,
+			"RequestbySingleLayer":true,
+			"GeometrySelect":false
+		}
+	</script>
+
+	<script type="text/javascript">
+		var ncol3map = null;
+
+		var interactions = ol.interaction.defaults({ pinchRotate: false });
+		ncol3map = new ol.Map({
+			target: 'map',
+			controls: [],
+			interactions: interactions,
+			loadTilesWhileInteracting: false,
+			loadTilesWhileAnimating: false,
+			layers: [
+				/*new ol.layer.Tile({
+					source: new ol.source.XYZ({ url: '_pl/{z}/{x}/{y}.png', minZoom: 3, maxZoom: 3, wrapX: false, projection: ol.proj.get('EPSG:3857') })
+				})*/
+			]
+		});
+		//ncol3map.getView().fit([2748916.325541941, 4130295.3963087457, 5097061.834462555, 5321490.045104932], ncol3map.getSize());
+
+		function initMap() {
+			ncol3map.initNGS(_startupParameters,
+				{
+					loadComponents: false,
+					leftPanel: false,
+					toolbar: false,
+					layerManager: false,
+					overviewMap: false,
+					zoom: false,
+					scaleLine: false
+				},
+				function (sucessResult) {
+				
+ncol3map.getLayers().forEach(function(lyr,i) { 
+	switch(lyr.get("title")) {
+	/*	
+	case "Belediye" :
+	case "Belediye Sınırı" :
+	case "Genel Uydu" :
+	case "Genel_Uydu" :
+	case "Genel_UyduFoto" :
+	case "Genel Uydu üst" :
+	case "Genel Uydu Alt" :
+	case "İdari Mahalle" :
+	case "İlçe" :
+	case "İlçe Sınırı" :
+	case "İlçe Sınırları" :
+	case "İller-İlçeler" :
+	case "Kadastro" :
+	case "Mahalle" :
+	case "Numarataj" :
+	case "Ortofoto" :
+	case "OrtoFoto" :
+	case "Parklar" :
+	case "Plan Fonksiyon Alanları" :
+	case "UyduFoto" :
+	case "UyduFoto_Genel" :
+	case "Uyg_İmr_Planı" :
+	case "Yapı" :
+	case "Yapılar" :
+	case "Yol" :
+	case "Yollar" : 
+	break;
+	*/
+	case "360 Çekim Noktaları" :
+	case "360 Rota" :
+	case "360 İç Mekan" :
+	case "360 Görüntüler" :
+	case "Afet Plan" :
+	case "Ana_Arter" :
+	case "Anaarter" :
+	case "Anaarterler" :
+	case "Ana Arter (Karayolu)" :
+	case "Belediye Binaları" :
+	case "Çekim Noktaları" :
+	case "Çöp Konteynerları" :
+	case "Endüstriyel Kuruluşlar" :
+	case "Fen İşleri" :
+	case "Fen İş - İşler" :
+	case "İkonlar" :
+	case "Nöbetçi Eczaneler" :
+	case "Ovalar" :
+	case "Önemli Yerler" :
+	case "Parklar" :
+	case "Rehber" :
+	case "SpatialRef" :
+	case "Şikayet" :
+	case "Yol Tabelası" :
+		lyr.setVisible(false);
+		break;
+	}
+});				
+					$(document).keyup(function (e) {
+						if (e.keyCode == 27) {
+							if (!$("#_ncGlobalModal").is(":visible")) {
+								ncol3map.clearCurrentHandler();
+							}
+						}
+					});
+				},
+				function (errorResult) {
+					console.debug(errorResult);
+				}
+			);
+		}
+	</script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.1/js/bootstrap.min.js"></script>
+	<script>(typeof $().emulateTransitionEnd == 'function') || document.write('<script src="js/bootstrap.min.js"><\/script>')</script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/6.0.1/i18next.min.js"></script>
+	<script>window.i18next || document.write('<script src="js/i18next.min.js"><\/script>')</script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/i18next-browser-languagedetector/1.0.1/i18nextBrowserLanguageDetector.min.js"></script>
+	<script>window.i18nextBrowserLanguageDetector || document.write('<script src="js/i18nextBrowserLanguageDetector.min.js"><\/script>')</script>
+
+	<script src="http://demo.netigma.io/webgissdk4/js/i18nextXHRBackend.min.js"></script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-i18next/1.2.0/jquery-i18next.min.js"></script>
+	<script>window.jqueryI18next || document.write('<script src="js/jquery-i18next.min.js"><\/script>')</script>
+
+	<script type="text/javascript">
+		initMap();
+
+		if (_startupParameters.PageTitle && _startupParameters.PageTitle != "-") {
+			document.title = _startupParameters.PageTitle;
+		}
+
+		function btnQueryAndMark_Click() {
+			//OGC kriteri oluşturulur.
+			var criteria = "<PropertyIsEqualTo regularExpressions=\"false\">" +
+                            "<PropertyName>MAHALLE_ADI</PropertyName>" +
+                            "<Literal>" + $("#txtAra").val() + "</Literal>" +
+                            "</PropertyIsEqualTo>";
+
+			//Parametrelere göre sorgu yapılır.
+			//fad veya layerName ile sorgulama yapılabilir.
+			ol.nc.Util.getFeaturesFromNetgis(
+            {
+            	layerName: 'İdari Mahalle',
+            	//fad: 'MAHALLE.BAGLANTI1.MAHALLE',
+            	filter: criteria,
+            	maxRecordCount: 100,
+            	webgisUrl: ncol3map.get("startupParameters").getWebgisUrl(),
+            	workspaceName: ncol3map.get("startupParameters")["Workspace"],
+            	sessionId: ncol3map.get("startupParameters")["SessionId"],
+            	successFunction: function (result) {
+
+            		//Sorgu sonucu feature dizisine dönüştürülür.
+            		var features = ol.nc.Util.parseGetInfoExResult(result)
+
+            		//Feature dizisi highlight edilir.
+            		ol.nc.NetgisSearch.highlightFeatures({
+            			map: ncol3map,
+            			features: features,
+            		});
+
+            	}
+            });
+		}
+
+		function btnClearHighlights_Click() {
+			//Arama sonucu oluşan highlight'ı temizler.
+			ol.nc.NetgisSearch.clear();
+		}
+
+		function btnParcelSearch_Click() {
+			//OGC kriteri oluşturulur.
+			var criteria = "<PropertyIsEqualTo regularExpressions=\"false\">" +
+                            "<PropertyName>INSAAT_NIZAM</PropertyName>" +
+                            "<Literal>AYRIK</Literal>" +
+                            "</PropertyIsEqualTo>";
+
+			//Parametrelere göre sorgu yapılır.
+			//fad veya layerName ile sorgulama yapılabilir.
+			ol.nc.Util.getFeaturesFromNetgis(
+            {
+            	layerName: 'Parsel',
+            	//fad: 'Parsel.BAGLANTI1.Parsel',
+            	filter: criteria,
+            	maxRecordCount: 100,
+            	webgisUrl: ncol3map.get("startupParameters").getWebgisUrl(),
+            	workspaceName: ncol3map.get("startupParameters")["Workspace"],
+            	sessionId: ncol3map.get("startupParameters")["SessionId"],
+            	successFunction: function (result) {
+
+            		//Sorgu sonucu feature dizisine dönüştürülür.
+            		var features = ol.nc.Util.parseGetInfoExResult(result)
+
+            		//Feature dizisi highlight edilir.
+            		ol.nc.NetgisSearch.highlightFeatures({
+            			map: ncol3map,
+            			features: features,
+            		});
+
+            		//Arama sonuçlarının limitine zoom yapılır
+            		ncol3map.getView().fit(ol.nc.NetgisSearch._ncGAVectorLayer.getSource().getExtent(), ncol3map.getSize());
+
+
+            	}
+            });
+		}
+
+		function btnAddMarker_Click() {
+			//Arama sonuçlarına marker eklenir.
+			//Marker'a bilgi balonu eklenir.
+			ol.nc.NetgisSearch._ncGAVectorLayer.getSource().getFeatures().forEach(function (ftr) {
+				//Featurenin orta noktasını bulunur.
+				var pnt = ol.nc.Util.getGeometryPoint(ftr.getGeometry());
+
+				//Bulunan orta nokta kordinatlarına marker eklenir.
+				var marker = ncol3map.addMarker({
+					coordinate: pnt.getCoordinates(),
+				});
+			});
+
+		}
+
+		function btnAddMarkerIframe_Click() {
+			//Harita markerları silinir.
+			ncol3map.clearMarkers();
+
+			//Arama sonuçlarına marker eklenir.
+			//Marker'a bilgi balonu eklenir.
+			ol.nc.NetgisSearch._ncGAVectorLayer.getSource().getFeatures().forEach(function (ftr) {
+				//Featurenin orta noktasını bulunur.
+				var pnt = ol.nc.Util.getGeometryPoint(ftr.getGeometry());
+
+				//Bulunan orta nokta kordinatlarına marker eklenir.
+				//Marker'ın üzerine tıklandığında açılacak fonksiyon ve parametreleri belirlenir.
+				//Geri dönüş fonksiyonu olan parcelMarkerIframeCallbackFunction, feature'a göre içinde iframe olan bir popup açan bir fonksiyondur.
+				var marker = ncol3map.addMarker({
+					coordinate: pnt.getCoordinates(),
+					callbackFunction: parcelMarkerIframeCallbackFunction,
+					callbackParameters: {
+						feature: ftr
+					},
+				});
+			});
+
+		}
+
+		function parcelMarkerIframeCallbackFunction(opts) {
+			var options = opts || {};
+			//Gönderilen parametre alınır.
+			var feature = options.data.feature;
+
+			//Featurenin orta noktasını bulunur.
+			var pnt = ol.nc.Util.getGeometryPoint(feature.getGeometry());
+
+			//Parametrelere göre popup açan fonksiyon çağrısı yapılır.
+			ol.nc.Util.showPopup({
+				width: 300,
+				height: 500,
+				title: 'IFrame içeren popup',
+				url: 'http://www.netcad.com.tr',
+				//content: '<div>Belirli bir içerik</div>',
+				coordinate: pnt.getCoordinates(),
+			});
+		}
+
+		function btnAddMarkerContent_Click() {
+			//Harita markerları silinir.
+			ncol3map.clearMarkers();
+
+			//Arama sonuçlarına marker eklenir.
+			//Marker'a bilgi balonu eklenir.
+			ol.nc.NetgisSearch._ncGAVectorLayer.getSource().getFeatures().forEach(function (ftr) {
+				//Featurenin orta noktasını bulunur.
+				var pnt = ol.nc.Util.getGeometryPoint(ftr.getGeometry());
+
+				//Bulunan orta nokta kordinatlarına marker eklenir.
+				//Marker'ın üzerine tıklandığında açılacak fonksiyon ve parametreleri belirlenir.
+				//Geri dönüş fonksiyonu olan parcelMarkerContentCallbackFunction, feature'a göre içinde özel içerik olan bir popup açan bir fonksiyondur.
+				var marker = ncol3map.addMarker({
+					coordinate: pnt.getCoordinates(),
+					callbackFunction: parcelMarkerContentCallbackFunction,
+					callbackParameters: {
+						feature: ftr
+					},
+				});
+			});
+
+		}
+
+		function parcelMarkerContentCallbackFunction(opts) {
+			var options = opts || {};
+			//Gönderilen parametre alınır.
+			var feature = options.data.feature;
+
+			//Featurenin orta noktası bulunur
+			var pnt = ol.nc.Util.getGeometryPoint(feature.getGeometry());
+
+			//Parametrelere göre popup açan fonksiyon çağrısı yapılır.
+			ol.nc.Util.showPopup({
+				width: 250,
+				height: 100,
+				title: 'Belirli bir içerik başlığı',
+				//url: 'http://www.netcad.com.tr',
+				content: '<div>Belirli bir içerik</div>',
+				coordinate: pnt.getCoordinates(),
+			});
+		}
+
+		function btnClearMarker_Click() {
+			//Harita markerları silinir.
+			ncol3map.clearMarkers();
+		}
+
+		function btnDrillDownPoint_Click() {
+			//Verilen nokta için bütün katmanları tarar ve noktaya denk gelen nesneleri döndürür.
+			//Detaylı açıklama showSearchResults fonksiyonunda verilmiştir.
+			var geom = new ol.geom.Point([494780.449218749, 4426020.35156249]);
+			showSearchResults({ geometry: geom });
+		}
+
+		function btnDrillDownBuffer_Click() {
+			//Verilen nokta için önce bir buffer alarak, bütün katmanları tarar ve bu buffer'a (poligon) denk gelen nesneleri döndürür.
+			//Detaylı açıklama showSearchResults fonksiyonunda verilmiştir.
+			var geom = ol.extent.getBufferPolygon([494780.449218749, 4426020.35156249], ncol3map.getView().getResolution());
+			showSearchResults({ geometry: geom });
+		}
+
+		function btnDrillDownBufferLayer_Click() {
+			//Verilen nokta için önce bir buffer alarak, MAHALLE katmanını tarar ve bu buffer'a (poligon) denk gelen nesneleri döndürür.
+			//Detaylı açıklama showSearchResults fonksiyonunda verilmiştir.
+			var geom = ol.extent.getBufferPolygon([494780.449218749, 4426020.35156249], ncol3map.getView().getResolution());
+			showSearchResults({ geometry: geom, layerName: 'MAHALLE' });
+		}
+
+		function btnDrillDownLine_Click() {
+			//Verilen doğru ile kesişen bütün katmanları tarar ve denk gelen nesneleri döndürür.
+			//Detaylı açıklama showSearchResults fonksiyonunda verilmiştir.
+			var geom = new ol.geom.LineString([[494780.449218749, 4425950.03906249], [494780.449218749, 4426020.35156249], [494868.339843749, 4426020.35156249]]);
+			showSearchResults({ geometry: geom });
+		}
+
+		function btnDrillDownPolygon_Click() {
+			//Verilen poligon ile kesişen bütün katmanları tarar ve denk gelen nesneleri döndürür.
+			//Detaylı açıklama showSearchResults fonksiyonunda verilmiştir.
+			var geom = new ol.geom.Polygon([[[494780.449218749, 4425950.03906249], [494780.449218749, 4426020.35156249], [494868.339843749, 4426020.35156249], [494868.339843749, 4425950.03906249], [494780.449218749, 4425950.03906249]]]);
+			showSearchResults({ geometry: geom });
+		}
+
+		function btnDrillDownPolygonLayer_Click() {
+			//Verilen poligon ile kesişen MAHALLE katmanını tarar ve denk gelen nesneleri döndürür.
+			//Detaylı açıklama showSearchResults fonksiyonunda verilmiştir.
+			var geom = new ol.geom.Polygon([[[494780.449218749, 4425950.03906249], [494780.449218749, 4426020.35156249], [494868.339843749, 4426020.35156249], [494868.339843749, 4425950.03906249], [494780.449218749, 4425950.03906249]]]);
+			showSearchResults({ geometry: geom, layerName: 'MAHALLE' });
+		}
+
+		function showSearchResults(opts) {
+			var options = opts || {};
+			$('#result').empty();
+			//Verilen geometri nesnesi ve katman ismi parametre olarak alınır.
+			//Katman ismi parametresi boş gönderilirse bütün katmanlar taranır.
+
+			//Gelen geometrinin OGC kriteri oluşturulur.
+			var criteria = "<Intersects>" +
+                    "<PropertyName>Geometry</PropertyName>" +
+                    ol.nc.Util.getNetgisGML(ncol3map, options.geometry) + //Geometrinin GML metni oluşturulur.
+                    "</Intersects>";
+
+			//Verilen katman bilgisine göre haritanın katmanları alınır.
+			//Detaylı açıklama getSpatialCats fonksiyonunda verilmiştir.
+			var cats = getSpatialCats(options);
+
+			for (var i = 0; i < cats.length; i++) {
+				//Her katman için verilen geometri ile kesişen bütün nesneler successFunction'da tanımlanan callback fonksiyonuna döndürülür.
+				//extraData parametresiyle callback fonksiyonunda kullanılabilecek veriler atılır.
+				ol.nc.Util.getInfoFromNetgis(
+                {
+                	layerName: cats[i]["CatParams"]["LayerName"],
+                	filter: criteria,
+                	maxRecordCount: 100,
+                	webgisUrl: ncol3map.get("startupParameters").getWebgisUrl(),
+                	workspaceName: ncol3map.get("startupParameters")["Workspace"],
+                	sessionId: ncol3map.get("startupParameters")["SessionId"],
+                	successFunction: function (result, context) {
+                		//Dönen veri xml'e çevirilir.
+                		result = $.parseXML(result.documentElement.firstChild.nodeValue);
+                		//Xml verisindeki "Data" etiketinde dönen kayıtlar yer alır.
+                		$data = $(result).find("Data");
+                		if ($data.length == 0 || $data.children().length == 0) {
+                			return;
+                		}
+
+                		$.each($data.children("record"), function (idx, rec) { //$data altındaki her bir "record" etiketinde katmana ait bulunan kayıtlar yer alır.
+                			var htmlResult = '<b>' + context.extraData.CatParams.CatName + '</b> '; //extraData parametresinden alınan katman ismi sonuca yazılır.
+                			var $rec = $(rec);
+                			htmlResult += $.map($rec.children(), function (recProp) { //Dönen her kayıt için özellikler ve değerleri metin haline dönüştürülür.
+                				var $recProp = $(recProp);
+                				return $recProp.prop("tagName") + ":" + $recProp.text();
+                			}).join(', ');
+                			$('#result').append(htmlResult + '<br>');
+                		});
+                	},
+                	extraData: cats[i] //extraData parametresiyle callback fonksiyonunda kullanılabilecek veriler atılır.
+                });
+			}
+		}
+
+		function getSpatialCats(opts) {
+			var options = opts || {};
+			//Gelen parametreye göre haritanın kategorileri filtrelenir.
+			return ncol3map.get("getCategoriesResult").Category.filter(function (elem) {
+				var spatial = (elem["CatParams"]["RefKeyword"] == "NCSPATIAL"); //Kategorinin spatial olup olmadığı belirlenir.
+
+				//Kategorinin tablosu belirlenir.
+				var tableDef = null;
+				if (ncol3map.get("getTablesResult").Tables.Table.length) {
+					tableDef = (ncol3map.get("getTablesResult").Tables.Table.filter(function (tbl) { return (tbl.TableName == elem["CatParams"]["FAD"]); }));
+					tableDef = (tableDef && tableDef.length > 0) ? tableDef[0] : null;
+				}
+				else {
+					tableDef = ncol3map.get("getTablesResult").Tables.Table;
+				}
+				tableDef = (tableDef && tableDef.Layouts && tableDef.Layouts.Layout);
+
+				return spatial &&
+                    tableDef &&
+                    (options.layerName ? elem["CatParams"]["LayerName"] == options.layerName : true);
+			});
+		}
+
+		function btnZoomIn_Click() {
+			//Bir seviye yaklaşır.
+			var view = ncol3map.getView();
+			view.setZoom(+view.getZoom() + 1);
+		}
+
+		function btnZoomOut_Click() {
+			//Bir seviye uzaklaşır.
+			var view = ncol3map.getView();
+			view.setZoom(+view.getZoom() - 1);
+		}
+
+		function btnZoomInPan_Click() {
+			//Pan yaparak bir seviye yaklaşır.
+			var view = ncol3map.getView(),
+				pan = ol.animation.pan({
+					duration: 1000,
+					source: view.getCenter()
+				}),
+				zoom = ol.animation.zoom({
+					duration: 1000,
+					resolution: view.getResolution()
+				});
+
+			ncol3map.beforeRender(pan, zoom);
+			view.setZoom(+view.getZoom() + 1);
+		}
+
+		function btnZoomOutPan_Click() {
+			//Pan yaparak bir seviye uzaklaşır.
+			var view = ncol3map.getView(),
+				pan = ol.animation.pan({
+					duration: 1000,
+					source: view.getCenter()
+				}),
+				zoom = ol.animation.zoom({
+					duration: 1000,
+					resolution: view.getResolution()
+				});
+
+			ncol3map.beforeRender(pan, zoom);
+			view.setZoom(+view.getZoom() - 1);
+		}
+
+		function btnGotoXY_Click() {
+			//Harita nesnesinin "view" property'si istenir.
+			var view = ncol3map.getView();
+			var coord = [parseFloat($('#txtY').val()), parseFloat($('#txtX').val())];
+			//Verilen koordinat parametrelerine göre görünümün orta noktası belirlenir.
+			view.setCenter(coord);
+			//Verilen zoom faktörüne göre görünümün zoom seviyesi belirlenir.
+			view.setZoom($('#txtZoom').val());
+			//Harita yeniden çizilir.
+			
+		
+ncol3map.clearMarkers();
+ncol3map.addMarker({
+       showPopup: false,
+       width: 120,
+       height: 40,
+       title: i18next.t("araclar.koordinat"),
+       content: "Test",
+       coordinate: coord,
+       showImmediately: true
+});	
+
+
+//https://stackoverflow.com/questions/41427543/how-to-add-custom-html-dom-element-in-layers-of-openlayer-3
+
+//http://openlayers.org/en/latest/examples/overlay.html
+//http://openlayers.org/en/latest/examples/icon.html
+
+ncol3map.getOverlays().clear();
+var marker = new ol.Overlay({
+	position: coord,
+	positioning: 'center-center',
+	element: $("<div style='width:100px;height:100px;background-color:red;'>Test</div>").get(0),
+	stopEvent: false
+});
+ncol3map.addOverlay(marker);		
+			
+		}
+
+		function btnThematic_Click() {
+
+			//if (!ol.nc.Thematic._initialized) {
+			//    ol.nc.Thematic.initialize();
+			//    ncol3map.addModifier(ol.nc.Thematic);
+			//    ol.nc.Thematic._initialized = true;
+			//}
+			//Tematik temizlemek için tanımlı fonksiyon çağrısı yapılır.
+			ol.nc.Thematic.clear();
+
+			//Yeni bir thematicFeatures nesnesi oluşturulur.
+			var thematicFeatures = new ol.nc.Thematic.thematicFeatures();
+			//Tematiğin yapılacağı tablodaki anahtar alan belirlenir.
+			thematicFeatures.keyField = 'MAHALLE_KODU';
+			//Tematiğin yapılacağı layer belirlenir.
+			thematicFeatures.layer = 'MAHALLE';
+			//Tematiğin yapılacağı featureları tutan dizi oluşturulur.
+			thematicFeatures.features = [];
+
+			//Tematiğin yapılacağı featurelar oluşturulur ve diziye eklenir.
+			var thematicFeature = new ol.Feature();
+			var properties = {};
+			properties['MAHALLE_KODU'] = 2;
+			thematicFeature.setProperties(properties)
+			thematicFeatures.features.push(thematicFeature);
+
+			thematicFeature = new ol.Feature();
+			var properties = {};
+			properties['MAHALLE_KODU'] = 3;
+			thematicFeature.setProperties(properties)
+			thematicFeatures.features.push(thematicFeature);
+
+			thematicFeature = new ol.Feature();
+			var properties = {};
+			properties['MAHALLE_KODU'] = 4;
+			thematicFeature.setProperties(properties)
+			thematicFeatures.features.push(thematicFeature);
+
+			thematicFeature = new ol.Feature();
+			var properties = {};
+			properties['MAHALLE_KODU'] = 5;
+			thematicFeature.setProperties(properties)
+			thematicFeatures.features.push(thematicFeature);
+
+			//Tematik stillerini tutan dizi oluşturulur.
+			var thematicStyles = [];
+			//Tematiğin stili oluşturulur ve diziye eklenir.
+			var thematicStyle = new ol.nc.Thematic.thematicStyle();
+			//Tematik yapılan kayıtlarda görüntülenecek etiket belirlenir.
+			thematicStyle.label = 'ANITTEPE';
+			//Tematik stiline girecek kayıtları süzmek için kriter belirlenir.
+			thematicStyle.criteria = '[#MAHALLE_KODU]==2';
+			//Tematik yapılan kayıtların görüntüleneceği stil belirlenir.
+			thematicStyle.style = new ol.style.Style({
+				fill: new ol.style.Fill({
+					color: 'rgba(110,207,246, 0.7)'
+				}),
+				stroke: new ol.style.Stroke({
+					color: 'rgba(110,207,246, 1)',
+					width: 5
+				}),
+				text: new ol.style.Text({
+					fill: new ol.style.Fill({
+						color: 'rgba(110,207,246, 1)'
+					})
+				})
+			});
+			//Tematik stili diziye eklenir.
+			thematicStyles.push(thematicStyle);
+
+			thematicStyle = new ol.nc.Thematic.thematicStyle();
+			thematicStyle.label = 'ESAT';
+			thematicStyle.criteria = '[#MAHALLE_KODU]==3';
+			thematicStyle.style = new ol.style.Style({
+				fill: new ol.style.Fill({
+					color: 'rgba(0,114,188, 0.7)'
+				}),
+				stroke: new ol.style.Stroke({
+					color: 'rgba(0,114,188, 1)',
+					width: 5
+				}),
+				text: new ol.style.Text({
+					fill: new ol.style.Fill({
+						color: 'rgba(0,114,188, 1)'
+					})
+				})
+			});
+			thematicStyles.push(thematicStyle);
+
+			thematicStyle = new ol.nc.Thematic.thematicStyle();
+			thematicStyle.label = 'SANCAK';
+			thematicStyle.criteria = '[#MAHALLE_KODU]==4';
+			thematicStyle.style = new ol.style.Style({
+				fill: new ol.style.Fill({
+					color: 'rgba(166,206,57, 0.7)'
+				}),
+				stroke: new ol.style.Stroke({
+					color: 'rgba(166,206,57, 1)',
+					width: 5
+				}),
+				text: new ol.style.Text({
+					fill: new ol.style.Fill({
+						color: 'rgba(166,206,57, 1)'
+					})
+				})
+			});
+			thematicStyles.push(thematicStyle);
+
+			thematicStyle = new ol.nc.Thematic.thematicStyle();
+			thematicStyle.label = 'DÜZGEÇIT';
+			thematicStyle.criteria = '[#MAHALLE_KODU]==5';
+			thematicStyle.style = new ol.style.Style({
+				fill: new ol.style.Fill({
+					color: 'rgba(255,203,8, 0.7)'
+				}),
+				stroke: new ol.style.Stroke({
+					color: 'rgba(255,203,8, 1)',
+					width: 5
+				}),
+				text: new ol.style.Text({
+					fill: new ol.style.Fill({
+						color: 'rgba(255,203,8, 1)'
+					})
+				})
+			});
+			thematicStyles.push(thematicStyle);
+			//Tematik uygulamak için stiller ve veri parametreleriyle fonksiyon çağrısı yapılır.
+			ol.nc.Thematic.applyThematic(thematicStyles, thematicFeatures);
+
+		}
+
+		function btnThematicClear_Click() {
+			//Tematik temizlemek için tanımlı fonksiyon çağrısı yapılır.
+			ol.nc.Thematic.clear();
+		}
+
+		function btnAreaChanged_Click() {
+			//Harita hareket ettirme event'ini dinlemeyi başlatır veya bitirir.
+			//Callback fonksiyonu olarak moveEndEventCallback event argümanlarıyla birlikte çağrılır.
+			if ($('#btnAreaChanged').text() == 'Bölge Takip') {
+				ncol3map.on('moveend', moveEndEventCallback);
+				$('#btnAreaChanged').text('Bölge Takip Bitir');
+			}
+			else {
+				ncol3map.un('moveend', moveEndEventCallback);
+				$('#btnAreaChanged').text('Bölge Takip');
+			}
+		}
+
+		function moveEndEventCallback(evt) {
+			//Ayarlanan moveend eventini dinleme esnasında parametre olarak event argümanı iletilir.
+			//Haritanın orta noktası yazılır.
+			$("#result").text(ncol3map.getView().getCenter());
+		}
+
+		function btnGetOnClick_Click() {
+			//Haritaya tıklama event'ini dinlemeyi başlatır veya bitirir.
+			//Callback fonksiyonu olarak clickEventCallback event argümanlarıyla birlikte çağrılır.
+			if ($('#btnGetOnClick').text() == 'Click') {
+				ncol3map.on('singleclick', clickEventCallback);
+				$('#btnGetOnClick').text('Click Bitir');
+			}
+			else {
+				ncol3map.un('singleclick', clickEventCallback);
+				$('#btnGetOnClick').text('Click');
+			}
+		}
+
+		function clickEventCallback(evt) {
+			//Ayarlanan singleclick event'ini dinleme esnasında parametre olarak event argümanı iletilir.
+			//Tıklanan kordinat nokta yazılır.
+			$("#result").text(evt.coordinate);
+		}
+
+		function btnProjectionChange_Click(resultObject) {
+			//Verilen iki SRID (EPSG kodu) arasında koordinat dönüşümü yapar. Örn: 2321 -> 4326
+			$('#result').text(ol.proj.transform([parseFloat($("#txtY").val()), parseFloat($("#txtX").val())], ncol3map.getView().getProjection(), "EPSG:4326"));
+		}
+
+		function btnGetLimit_Click() {
+			//Görüntülenen alanın limiti alınır.
+			$('#result').text(ncol3map.getView().calculateExtent(ncol3map.getSize()));
+		}
+
+		function btnGetCurrentZoomLevel_Click() {
+			//O andaki zoom seviyesi alınır.
+			$('#result').text(ncol3map.getView().getZoom());
+		}
+
+		function btnWorldToPointXY_Click() {
+			//Verilen X, Y koordinat değerlerinin piksel karşılığını döndürür
+			$('#result').text(ncol3map.getPixelFromCoordinate([parseFloat($("#txtY").val()), parseFloat($("#txtX").val())]));
+		}
+		function showGeom(geom) {
+			var point_feature = new ol.Feature({});
+			point_feature.setGeometry(geom);
+
+			ol.nc.NetgisSearch._ncGAVectorLayer = new ol.layer.Vector({
+				map: ncol3map,
+				source: new ol.source.Vector(),
+				wrapX: false,
+				style: new ol.style.Style({
+					fill: new ol.style.Fill({
+						color: 'rgba(255, 255, 255, 0.4)'
+					}),
+					stroke: new ol.style.Stroke({
+						color: '#3399CC',
+						width: 5
+					}),
+					image: new ol.style.Circle({
+						fill: new ol.style.Fill({
+							color: 'rgba(255, 255, 255, 0.4)'
+						}),
+						stroke: new ol.style.Stroke({
+							color: '#3399CC',
+							width: 3
+						}),
+						radius: 5
+					}),
+					text: new ol.style.Text({
+						font: '12px Calibri,sans-serif',
+						fill: new ol.style.Fill({
+							color: 'rgba(255, 255, 255, 0.4)'
+						}),
+						stroke: new ol.style.Stroke({
+							color: '#3399CC',
+							width: 3
+						})
+					})
+				})
+			});
+
+			ol.nc.NetgisSearch._ncGAVectorLayer.getSource().addFeature(point_feature);
+		}
+	</script>
+
+
+</body>
+</html>

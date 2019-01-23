@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+ 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ol3/3.20.1/ol.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.3.17/proj4.js"></script>
+     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next/6.0.1/i18next.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/i18next-browser-languagedetector/1.0.1/i18nextBrowserLanguageDetector.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-i18next/1.2.0/jquery-i18next.min.js"></script>
+     
+    <script src="http://demo.netigma.io/webgissdk4/js/i18nextXHRBackend.min.js"></script> 
+    <script src='http://demo.netigma.io/webgissdk4/js/sdk.js'></script>
+     
+    <link href="http://demo.netigma.io/webgissdk4/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="http://demo.netigma.io/webgissdk4/css/ol.css" rel="stylesheet" />
+    <link href="http://demo.netigma.io/webgissdk4/css/sdk-iconfont.css" rel="stylesheet" />
+    <link href='http://demo.netigma.io/webgissdk4/css/sdk.css' rel='stylesheet' />
+ 
+    <style>
+        #map {
+            width: 100%;
+            height: 100%;
+            top: 0px;
+            left: 0px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-10">
+                <div id="map" tabindex="0"></div>
+            </div>
+        </div>
+    </div>
+ 
+	<div id="coordinate">
+	</div>
+	<div id="result">
+	</div>
+		
+    <script type='text/javascript'>
+        var sdkBaseUrl = "http://demo.netigma.io/webgissdk4/";
+        var netgisBaseUrl = "http://demo.netigma.io/webgis_net";   // Noktalı virgül(;) ile birden fazla Netgis Server tanımlanabilir.
+        var _startupParameters =
+            {
+                "SessionId": "",
+                "WebgisUrl": netgisBaseUrl,
+                "SDKUrl": sdkBaseUrl,
+                "ImageType": "png",
+                "PageTitle": "-",
+                "MaxZoomLevel": "14",
+                "BBox": "-",
+                "Limit": "-",
+                "Workspace": "REHBER6_EXP",
+                "TileSize": "256",
+                "MaxRecordCount": "100",
+                "Language": "tr",
+                "FindLimit": true,
+                "CleanUp": true,
+                "ZoomBar": true
+            }
+ 
+        var ncol3map = null;
+        var interactions = ol.interaction.defaults({ pinchRotate: false });
+        ncol3map = new ol.Map({
+            target: 'map',
+            controls: [],
+            interactions: interactions,
+            loadTilesWhileInteracting: false,
+            loadTilesWhileAnimating: false
+        });
+ 
+        function initMap() {
+            ncol3map.initNGS(_startupParameters,
+                {
+                    loadComponents: false,
+                    leftPanel: false,
+                    toolbar: false,
+                    layerManager: false,
+                    overviewMap: false,
+                    zoom: false,
+                    scaleLine: false
+                },
+                function (sucessResult) {
+                    console.debug("success");
+                },
+                function (errorResult) {
+                    console.debug(errorResult);
+                }
+            );
+        }
+    </script>
+ 
+ 
+
+ 
+ <script type="text/javascript">
+         
+        $(document).ready(function(){
+            initMap();
+             
+             
+            ncol3map.on('singleclick', clickEventCallback);
+             
+        });
+         
+         
+        function clickEventCallback(evt) {
+            //Ayarlanan singleclick event'ini dinleme esnasında parametre olarak event argümanı iletilir.
+            //Tıklanan kordinat nokta yazılır.
+            $("#coordinate").html(evt.coordinate);
+             $('#result').html();
+			 
+             
+            var geometry = ol.extent.getBufferPolygon(evt.coordinate, ncol3map.getView().getResolution());
+			var feature = new ol.Feature();
+			feature.setGeometry(geometry);
+						
+             
+            //Gelen geometrinin OGC kriteri oluşturulur.
+            var criteria = "<Intersects>" +
+                    "<PropertyName>Geometry</PropertyName>" +
+                    ol.nc.Util.getNetgisGML(ncol3map, feature.getGeometry()) + //Geometrinin GML metni oluşturulur.
+                    "</Intersects>";
+            //Verilen katman bilgisine göre haritanın katmanları alınır.
+            //Detaylı açıklama getSpatialCats fonksiyonunda verilmiştir.
+ 
+            ol.nc.Util.getInfoFromNetgis(
+            {
+                layerName: 'kentrehberi_yapi',
+                filter: criteria,
+                maxRecordCount: 100,
+                webgisUrl: ncol3map.get("startupParameters").getWebgisUrl(),
+                workspaceName: ncol3map.get("startupParameters")["Workspace"],
+                sessionId: ncol3map.get("startupParameters")["SessionId"],
+                successFunction: function (result, context) {
+                    //Dönen veri xml'e çevirilir.
+                    result = $.parseXML(result.documentElement.firstChild.nodeValue);
+                    //Xml verisindeki "Data" etiketinde dönen kayıtlar yer alır.
+                    $data = $(result).find("Data");
+                    if ($data.length == 0 || $data.children().length == 0) {
+                        return;
+                    }
+                    $.each($data.children("record"), function (idx, rec) { //$data altındaki her bir "record" etiketinde katmana ait bulunan kayıtlar yer alır.
+                        
+						
+						
+						$($rec.children()[0]).text();
+						
+						
+						
+                    });
+                },
+            });
+             
+             
+        }
+         
+    </script>
+	
+ 
+</body>
+</html>
