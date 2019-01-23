@@ -33,4 +33,6 @@ var ncol3map = new ol.Map({
        loadTilesWhileInteracting: false,
        loadTilesWhileAnimating: false,
        layers: []
-});  ```
+});  
+
+ ```
