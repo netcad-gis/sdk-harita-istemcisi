@@ -19,3 +19,18 @@ Bu repoda SDK harita istemcisine ait örnek API kullanımları bulunmaktadır.
 
 # Genel Bakış
 
+API kullanımında en önemli gereklilik harita nesnesine işaret eden değişkenin adının `ncol3map` olması gerekliliğidir. Netgis Server legacy fonksiyonlarının bir kısmının karşılanmasında scope ve OpenLayers’ın kendisinden kaynaklı sıkıntılar yaşanacağından sabit bir instance adına karar verilmiştir.
+
+Kullanılacak harita nesnesinin adı mutlaka `ncol3map` olmalıdır.
+
+
+  ```
+var interactions = ol.interaction.defaults({ pinchRotate: false });
+var ncol3map = new ol.Map({
+       target: 'map',
+       controls: [],
+       interactions: interactions,
+       loadTilesWhileInteracting: false,
+       loadTilesWhileAnimating: false,
+       layers: []
+});  ```
