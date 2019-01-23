@@ -85,7 +85,7 @@ Initialize ve clear metotları ilk ayarları yapmak ve deaktivasyon öncesi temi
        this.clear = function () {
              ncol3map.removeInteraction(this.interaction);
        }
-}
+    }
 
 
 ## Modidifer Kavramı
@@ -125,3 +125,58 @@ Modifier’lar haritanın cleanup metodunda temizlenirler.
 
 
 ## ol.Map Nesnesine Tanımlı Başlıca Ek Fonksiyonlar
+
+
+    ol.Map.prototype.initNGS = function (startupParameters, visualOptions, successFunction, errorFunction)
+
+
+- Harita nesnesi yaratıldıktan sonra, Netgis Server ile iletişime geçilip workspace’in ve uygulamanın ayağa kaldırılması için çağrılan metot. Parametreler:
+
+
+      startupParameters = {
+          SessionId: Netcad Base Session Id
+          WebgisUrl: Netgis Server URL
+          SDKUrl: SDK Base URL
+          PageTitle: Sayfa Başlığı
+          MaxZoomLevel: Max Zoom Seviyesi
+          BBox: Açılış Bounding Box Değeri
+          Limit: Harita Limiti
+          Workspace: Netgis Server Workspace Adı
+          TileSize: Karo Boyutu
+          MaxRecordCount: Sorgu Sonucu Dönen Maksimum Kayıt Sayısı
+          Language: Uygulama Dili
+      }
+      visualOptions = {
+          loadComponents: true ise component’ler yüklenir
+          toolbar: true ise toolbar yüklenir
+          zoom: true ise zoom kontrolü yükklenir
+          scaleLine: true ise ölçek barı görüntülenir
+          layerManager: true ise katman yöneticisi görüntülenir
+          overviewMap: true ise kuş bakışı harita görüntülenir
+          leftPanel: true ise sol panel görüntülenir
+      }
+
+**successFunction:** Harita init sonrası çağrılması istenen bir fonksiyon var ise.
+
+**errorFunction:** Harita init esnasında bir hata olursa çağrılması istenen bir fonksiyon var ise.
+
+### ol.Map.prototype.ready = function ()
+
+Jquery’nin $(document).ready fonksiyonu gibi bir kullanıma sahiptir. İstenilen sayıda çağrılabilir. Harita nesnesinin ayağa kaldırılması sona erdiğinde bu şekilde sıraya eklenen fonksiyonlar bir bir işletilir. Örnek kullanım:
+
+```
+ncol3map.ready(function () {
+       ncol3map.addToolbarElement(new ol.control.ToolbarElement({
+             map: ncol3map,
+             title: "3D",
+             className: "icon-3D",
+             callbackFunction: function () {
+                    console.log(1);
+                    console.log(2);
+                    console.log(3);
+             },
+             callbackParameters: {}
+       }));
+});
+
+```
