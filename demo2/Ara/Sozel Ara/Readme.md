@@ -20,3 +20,6 @@ Feature listesinin harita üzerindeki konumuna gitmek için ol.Map objesinin get
 Highlight temizlemek için "ol.nc.NetgisSearch.clear" fonksiyonu kullanılır.
 
     ol.nc.NetgisSearch.clear();
+
+
+![Sözel Ara Örnek](https://raw.githubusercontent.com/netcad-gis/sdk-harita-istemcisi/master/img/image2018-6-26%208_15_28.png)
