@@ -30,8 +30,6 @@ Araçları aktif hale getirmek için ol.Map objesinin initNGS fonksiyonu yüklen
 
 Netgis server harita istemcisi için hazırlanmış özel componentlerin yüklenmesi sağlanır.
 
-
-
 ### leftPanel
 
 Sol panel aktif edilir.
