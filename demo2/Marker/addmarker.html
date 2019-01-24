@@ -63,7 +63,7 @@
                 "MaxZoomLevel": "14",
                 "BBox": "-",
                 "Limit": "-",
-                "Workspace": "REHBER6_EXP",
+                "Workspace": "world",
                 "TileSize": "256",
                 "MaxRecordCount": "100",
                 "Language": "tr",
@@ -119,17 +119,17 @@
              
                 //OGC kriteri oluşturulur.
                 var criteria = "<PropertyIsEqualTo regularExpressions=\"false\">" +
-                                "<PropertyName>adi_numarasi</PropertyName>" +
+                                "<PropertyName>objectid</PropertyName>" +
                                 "<Literal>" + $("#txtQuery").val() + "</Literal>" +
                                 "</PropertyIsEqualTo>";
                 //Parametrelere göre sorgu yapılır.
                 //fad veya layerName ile sorgulama yapılabilir.
                 ol.nc.Util.getFeaturesFromNetgis(
                 {
-                    layerName: 'geomahalle',
+                    layerName: 'world_happiest',
                     //fad: 'FAD.BAGLANTI1.FAD',
                     filter: criteria,
-                    maxRecordCount: 100,
+                    maxRecordCount: 1000,
                     webgisUrl: ncol3map.get("startupParameters").getWebgisUrl(),
                     workspaceName: ncol3map.get("startupParameters")["Workspace"],
                     sessionId: ncol3map.get("startupParameters")["SessionId"],
@@ -155,9 +155,6 @@
                             //Featurenin orta noktasını bulunur.
                             var pnt = ol.nc.Util.getGeometryPoint(ftr.getGeometry());
                             //Bulunan orta nokta kordinatlarına marker eklenir.
-							
-							
-							
 							
                             var marker = ncol3map.addMarker({
                                 coordinate: pnt.getCoordinates(),
