@@ -1,7 +1,7 @@
 
 # Araçlar
 
-Araçları aktif hale getirmek için ol.Map objesinin initNGS fonksiyonu yüklenirken visualOptions parametresi ile gerekli tanımların yapılması gerekiyor.
+Araçları aktif hale getirmek için "ol.Map" objesinin "initNGS" fonksiyonu yüklenirken visualOptions parametresi ile gerekli tanımların yapılması gerekiyor.
 
 
 ![Araçlar Örnek](https://raw.githubusercontent.com/netcad-gis/sdk-harita-istemcisi/master/img/araclar.png)

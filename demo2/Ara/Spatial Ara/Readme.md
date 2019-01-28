@@ -16,7 +16,7 @@ Spatial arama işlemini Netgis ile yapacağımız için geometry objesini GML fo
                     "</Intersects>";    
 
 
-Netgis getinfo servisini çağırıyoruz,
+Ve Netgis getinfo servisini çağırıyoruz,
 
 
     ol.nc.Util.getInfoFromNetgis(

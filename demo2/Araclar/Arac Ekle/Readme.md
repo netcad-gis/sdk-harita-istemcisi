@@ -22,12 +22,12 @@ Yeni bir araç oluşturmak için "ol.control.ToolbarElement" sınıfı kullanıl
         ordinal: 7
     });
 
-Oluşturulan yeni araç harita objesinin "addToolbarElement" fonksiyonu ile arayüze eklenir.
+Oluşturulan yeni araç , harita objesinin "addToolbarElement" fonksiyonu ile arayüze eklenir.
 
-    ncol3map.addToolbarElement(newt );
+    ncol3map.addToolbarElement(newt);
 
 
-Yeni araç seçildiğinde harita üzerinden bir işlem başlatmak için harita objesinin setCurrentHandler sınıfı kullanılır.
+Yeni araç seçildiğinde harita üzerinden bir işlem başlatmak için harita objesinin "setCurrentHandler" sınıfı kullanılır.
 
 
     ncol3map.setCurrentHandler(new selectMapBegin(params));

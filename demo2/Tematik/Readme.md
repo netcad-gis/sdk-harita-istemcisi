@@ -4,7 +4,7 @@
 
 Tematik yapmak için "ol.nc.Thematic.thematicFeatures()" collection oluşturulur.
 
-Her bir tematik kriteri için ol.Feature() oluşturularak setProperties fonksiyonu ile attribute tanımı yapılarak collection'a eklenir.
+Her bir tematik kriteri için "ol.Feature()" oluşturularak setProperties fonksiyonu ile attribute tanımı yapılarak collection'a eklenir.
 
 
     var thematicFeature = new ol.Feature();
@@ -14,7 +14,7 @@ Her bir tematik kriteri için ol.Feature() oluşturularak setProperties fonksiyo
     thematicFeatures.features.push(thematicFeature);
  
 
-Tematik kriterleri belirlendikten sonra stil tanımı yapmak için ol.nc.Thematic.thematicStyle() objesi oluşturulur.
+Tematik kriterleri belirlendikten sonra stil tanımı yapmak için "ol.nc.Thematic.thematicStyle()" objesi oluşturulur.
 
     var thematicStyle = new ol.nc.Thematic.thematicStyle();
     //Tematik yapılan kayıtlarda görüntülenecek etiket belirlenir.

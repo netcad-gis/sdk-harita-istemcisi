@@ -12,7 +12,7 @@ Jquery’nin $(document).ready fonksiyonu gibi bir kullanıma sahiptir. İstenil
 
 ## ol.Map.componentsReady
 
-Netgis Server Client için hazırlanmış özel componentlerin tamamı istemci tarafında yüklendikten sonra componentsReady olayı çağrılır
+Netgis Server Client için hazırlanmış özel componentlerin tamamı istemci tarafında yüklendikten sonra "componentsReady" olayı çağrılır.
 
     ncol3map.componentsReady(function () {
         console.log("component ready");
